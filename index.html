@@ -1,40 +1,225 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-		<link rel="stylesheet" href="dist/reset.css">
-		<link rel="stylesheet" href="dist/reveal.css">
-		<link rel="stylesheet" href="dist/theme/black.css">
+  <title>reveal.js</title>
 
-		<!-- Theme used for syntax highlighted code -->
-		<link rel="stylesheet" href="plugin/highlight/monokai.css">
-	</head>
-	<body>
-		<div class="reveal">
-			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
-			</div>
-		</div>
+  <link rel="stylesheet" href="dist/reset.css" />
+  <link rel="stylesheet" href="dist/reveal.css" />
+  <link rel="stylesheet" href="dist/theme/black.css" />
 
-		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
-		<script src="plugin/highlight/highlight.js"></script>
-		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
-			Reveal.initialize({
-				hash: true,
+  <!-- Theme used for syntax highlighted code -->
+  <link rel="stylesheet" href="plugin/highlight/monokai.css" />
+</head>
 
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
-			});
-		</script>
-	</body>
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <section>
+        <h2 class="r-fit-text">JSON Web Token</h2>
+        <img class="r-stretch" src="./examples/assets/jwt-logo.png" />
+        <aside class="notes">
+          Hello! Today i am gonna tell you about JSON web token.
+        </aside>
+      </section>
+      <section>
+        <h2>What is it?</h2>
+        <p>
+          JSON Web Token (JWT) is an open standard (RFC 7519) that defines a
+          compact and self-contained way for securely transmitting information
+          between parties as a JSON object. This information can be verified
+          and trusted because it is digitally signed.
+        </p>
+        <aside class="notes">
+          Lets start with understanding what jwt is.
+        </aside>
+      </section>
+      <section>
+        <h2>What is it used for?</h2>
+        <ul>
+          <li>Authorization</li>
+          <li>Information Exchange</li>
+        </ul>
+        <aside class="notes">
+          The most common scenario for using JWT is Authorization. And also JSON
+          Web Tokens are a good way of securely transmitting information
+          between parties.
+        </aside>
+      </section>
+      <section>
+        <h2>Structure</h2>
+        <ul>
+          <li>Header</li>
+          <li>Payload</li>
+          <li>Signature</li>
+        </ul>
+        <aside class="notes">
+          The JWT consist of 3 parts. They are header, payload, signature.
+          Header and payload are a common JSON objects which are encoded using base64url algorithm.
+          Encoded parts concatenate to each other and based on them, a signature is calculated, which also becomes part
+          of the token
+        </aside>
+      </section>
+      <section>
+        <h3>what does jwt looks like?</h3>
+        <img src="./examples/assets/jwt-look.png" alt="" />
+        <aside class="notes">
+          This is how JWT looks like. Different colored text indicates parts of token.
+          Red text represents header, pink part is payload and blue text is signature.
+          When we just look at this picture, we dont realize whats going on. Now lets figure out what all these parts
+          are for.
+        </aside>
+      </section>
+      <section>
+        <h3>header</h3>
+        <p style="text-align: left">Encrypted:</p>
+        <code>
+            <pre>
+					eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9
+				</pre
+            >
+          </code>
+        <p style="text-align: left">Decrypted:</p>
+        <code>
+            <pre>
+					{
+						"alg": "HS256",
+						"typ": "JWT"
+					}
+				</pre
+            >
+          </code>
+        <aside class="notes">
+          The header typically consists of two parts: the signing algorithm being
+          used and the type of the token (for compatibility), which is always JWT
+        </aside>
+      </section>
+      <section>
+        <h3>Payload</h3>
+        <p style="text-align: left">Encrypted:</p>
+        <code>
+            <pre>
+				eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ
+			</pre
+            >
+          </code>
+        <p style="text-align: left">Decrypted:</p>
+        <code>
+            <pre>
+				{
+					"sub": "1234567890",
+					"name": "John Doe",
+					"iat": 1516239022
+				}
+				  </pre
+            >
+          </code>
+        <aside class="notes">
+          The payload contains any information that usually helps application to identify user one way or another.
+          In our case, payload contains the following fields: sub is a user identificator, name is a username and iat is
+          a time when token was generated in Unix time format.
+        </aside>
+      </section>
+      <section>
+        <h3>Signature</h3>
+        <p style="text-align: left">Encrypted:</p>
+        <code>
+            <pre>
+				SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+			  </pre
+            >
+          </code>
+        <p style="text-align: left">Creation (pseudocode):</p>
+        <code>
+            <pre>
+				HMACSHA256(
+					base64UrlEncode(header) + "." +
+					base64UrlEncode(payload),
+					secret)
+			</pre
+            >
+          </code>
+        <aside class="notes">
+          The signature is used to verify the message wasn't changed along the
+          way, and, in the case of tokens signed with a private key, it can
+          also verify that the sender of the JWT is who it says it is.
+          On this slide we can see the pseudocode of signature creation method.
+          Since the header indicated the HS256 encryption method, this algorithm is used to generate the signature.
+          But we also can use many different algorithms for this task.
+        </aside>
+      </section>
+      <section>
+        <h2>advantages</h2>
+        <ul class="r-stretch">
+          <li>There is no need to store information about all issued tokens</li>
+          <li> An application may not be in charge of issuing tokens </li>
+          <li> JWT helps to organize microservice architecture</li>
+          <li> Data transmission in payload helps to improve application performance</li>
+        </ul>
+        <aside class="notes">
+          Advantages of JWT based on fact that it validates itself using own signature. Therefore the application does
+          not need to store information about all issued tokens. That means that tokens issuing may be the other
+          application's task and the user can get access to resources which trust this authentication service with his
+          own token.
+          Such principle of applications building is called a microservice architecture.
+        </aside>
+      </section>
+      <section>
+        <h2>limitations</h2>
+        <ul class="r-stretch">
+          <li>JWT does not implement payload encryption</li>
+          <li>
+            JWT stolen by an attacker allows him to impersonate a user for an unlimited time
+          </li>
+        </ul>
+        <aside class="notes">
+          JWT also has some limitations. As said before, payload is encrypted using the base64 algorithm. It means that
+          data transferred in payload are not secured.
+          Also if our token will be stolen, the application will accept it as usual.
+        </aside>
+      </section>
+      <section>
+        <h2>How to avoid this?</h2>
+        <p>Don't transfer private data in payload</p>
+        <div class="r-stack">
+          <img class="fragment" src="./examples/assets/example_bad.png" alt="" />
+          <img class="fragment" src="./examples/assets/example_good.png" alt="" />
+        </div>
+        <aside class="notes"></aside>
+      </section>
+      <section>
+        <h2>How to avoid this?</h2>
+        <p>Use JWT with limited lifetime</p>
+        <aside class="notes">
+          To prevent an attacker from using the stolen token, use a JWT with a limited lifetime.
+          Then jwt issue process will become more complicated. But this topic requires deeper study. And thats all for
+          now.
+        </aside>
+      </section>
+      <section>
+        <h2 class="r-fit-text">Thanks for your attention!</h2>
+      </section>
+    </div>
+  </div>
+
+  <script src="dist/reveal.js"></script>
+  <script src="plugin/notes/notes.js"></script>
+  <script src="plugin/markdown/markdown.js"></script>
+  <script src="plugin/highlight/highlight.js"></script>
+  <script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+      hash: true,
+
+      // Learn about plugins: https://revealjs.com/plugins/
+      plugins: [RevealMarkdown, RevealHighlight, RevealNotes],
+    });
+  </script>
+</body>
+
 </html>
